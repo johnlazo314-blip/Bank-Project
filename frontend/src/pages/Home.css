@@ -1,0 +1,31 @@
+.home {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4rem 2rem;
+}
+
+.coming-soon-container {
+  text-align: center;
+  max-width: 600px;
+}
+
+.coming-soon-container h2 {
+  font-size: 2.5rem;
+  color: #1a3a52;
+  margin: 0 0 1rem 0;
+}
+
+.coming-soon-text {
+  font-size: 1.5rem;
+  color: #4db8ff;
+  font-weight: bold;
+  margin: 1rem 0;
+}
+
+.description {
+  font-size: 1.1rem;
+  color: #666;
+  margin: 1rem 0;
+}
