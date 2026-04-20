@@ -1,15 +1,17 @@
-import './Header.css'
+import { Link } from 'react-router-dom';
+import './Header.css';
 
 export default function Header() {
   return (
     <header className="header">
       <div className="header-container">
-        <h1 className="logo">NorthBank</h1>
+        <h1 className="logo">
+          <Link to="/">NorthBank</Link>
+        </h1>
         <nav className="nav">
           <ul className="nav-list">
-            <li><a href="#home">Home</a></li>
-            <li><a href="#accounts">Accounts</a></li>
-            <li><a href="#transfers">Transfers</a></li>
+            <li><Link to="/">Home</Link></li>
+            <li><Link to="/users">User Management</Link></li>
           </ul>
         </nav>
       </div>
