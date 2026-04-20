@@ -42,14 +42,14 @@ This project uses PostgreSQL as the database.
     ```
     Replace `USER`, `PASSWORD`, `HOST`, `PORT`, and `DATABASE_NAME` with your database credentials.
 
-## Running the Application
+## Running the Application for Development
 
-You will need to run both the backend and frontend servers in separate terminals.
+You will need to run both the backend and frontend servers in separate terminals for local development.
 
 1.  **Start the backend server:**
     Navigate to the `backend` directory and run:
     ```bash
-    npm start
+    npm run dev
     ```
     The backend server will start on `http://localhost:3000` (or the port specified in your environment).
 
@@ -61,3 +61,29 @@ You will need to run both the backend and frontend servers in separate terminals
     The frontend application will be available at `http://localhost:5173` (or another port if 5173 is in use).
 
 You can now access the application in your web browser.
+
+## Building for Production
+
+To create a production build, you can run the build commands for both the frontend and backend.
+
+### Frontend
+```bash
+cd ../frontend
+npm run build
+```
+
+### Backend
+```bash
+cd ../backend
+npm run build
+```
+This will compile the TypeScript code into JavaScript in the `dist` directory.
+
+## Deployment
+
+When deploying the backend to a service like Render, use the following commands:
+
+-   **Build Command:** `npm install && npm run build`
+-   **Start Command:** `npm start`
+
+The `npm start` command will execute `node dist/index.js` to run the compiled application.
