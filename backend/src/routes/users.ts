@@ -16,7 +16,8 @@ router.get('/', async (req: Request, res: Response) => {
 // GET a single user by ID
 router.get('/:id', async (req: Request, res: Response) => {
   try {
-    const user = await User.findByPk(req.params.id);
+    const id = parseInt(req.params.id, 10);
+    const user = await User.findByPk(id);
     if (user) {
       res.json(user);
     } else {
@@ -40,11 +41,12 @@ router.post('/', async (req: Request, res: Response) => {
 // PUT to update a user
 router.put('/:id', async (req: Request, res: Response) => {
   try {
+    const id = parseInt(req.params.id, 10);
     const [updated] = await User.update(req.body, {
-      where: { userID: req.params.id }
+      where: { userID: id }
     });
     if (updated) {
-      const updatedUser = await User.findByPk(req.params.id);
+      const updatedUser = await User.findByPk(id);
       res.status(200).json(updatedUser);
     } else {
       res.status(404).json({ message: 'User not found' });
@@ -57,8 +59,9 @@ router.put('/:id', async (req: Request, res: Response) => {
 // DELETE a user
 router.delete('/:id', async (req: Request, res: Response) => {
   try {
+    const id = parseInt(req.params.id, 10);
     const deleted = await User.destroy({
-      where: { userID: req.params.id }
+      where: { userID: id }
     });
     if (deleted) {
       res.status(204).send(); // No content
