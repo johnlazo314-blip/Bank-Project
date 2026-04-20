@@ -6,9 +6,12 @@ const router = Router();
 // GET all users
 router.get('/', async (req: Request, res: Response) => {
   try {
-    const users = await User.findAll();
+    const users = await User.findAll({
+      attributes: ['UserID', 'FirstName', 'LastName', 'Email', 'Role']
+    });
     res.json(users);
   } catch (error) {
+    console.error('Error fetching users:', error); // Log the full error to the backend console
     res.status(500).json({ message: 'Error fetching users', error });
   }
 });
@@ -16,7 +19,7 @@ router.get('/', async (req: Request, res: Response) => {
 // GET a single user by ID
 router.get('/:id', async (req: Request, res: Response) => {
   try {
-    const id = parseInt(req.params.id, 10);
+    const id = parseInt(req.params.id as string, 10);
     const user = await User.findByPk(id);
     if (user) {
       res.json(user);
@@ -41,9 +44,9 @@ router.post('/', async (req: Request, res: Response) => {
 // PUT to update a user
 router.put('/:id', async (req: Request, res: Response) => {
   try {
-    const id = parseInt(req.params.id, 10);
+    const id = parseInt(req.params.id as string, 10);
     const [updated] = await User.update(req.body, {
-      where: { userID: id }
+      where: { UserID: id }
     });
     if (updated) {
       const updatedUser = await User.findByPk(id);
@@ -58,10 +61,10 @@ router.put('/:id', async (req: Request, res: Response) => {
 
 // DELETE a user
 router.delete('/:id', async (req: Request, res: Response) => {
+  const id = parseInt(req.params.id as string, 10);
   try {
-    const id = parseInt(req.params.id, 10);
     const deleted = await User.destroy({
-      where: { userID: id }
+      where: { UserID: id }
     });
     if (deleted) {
       res.status(204).send(); // No content

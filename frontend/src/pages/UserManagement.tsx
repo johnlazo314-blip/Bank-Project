@@ -1,4 +1,3 @@
-import React from 'react';
 import UserList from '../Components/UserList';
 import './UserManagement.css';
 

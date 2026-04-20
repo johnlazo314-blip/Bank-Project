@@ -2,6 +2,48 @@
   margin-top: 20px;
 }
 
+.user-form {
+  display: grid;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.user-form input,
+.user-form select {
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+}
+
+.form-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.form-actions button,
+.cancel-btn {
+  padding: 10px 14px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.form-actions button[type='submit'] {
+  background-color: #007bff;
+  color: #fff;
+}
+
+.cancel-btn {
+  background-color: #6c757d;
+  color: #fff;
+}
+
+.error-message {
+  color: #b30000;
+  font-weight: 600;
+  margin-bottom: 10px;
+}
+
 .user-list {
   list-style-type: none;
   padding: 0;

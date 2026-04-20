@@ -1,47 +1,58 @@
 import { DataTypes, Model } from 'sequelize';
 import sequelize from '../db';
 
-class User extends Model {
-  public userID!: number;
-  public FirstName!: string;
-  public LastName!: string;
-  public email!: string;
-  public role!: 'user' | 'admin';
+// Define the attributes for the User model
+interface UserAttributes {
+  UserID: number;
+  FirstName: string;
+  LastName: string;
+  Email: string;
+  Role: 'user' | 'admin';
 }
 
+// Create the User model class
+class User extends Model<UserAttributes> implements UserAttributes {
+  public UserID!: number;
+  public FirstName!: string;
+  public LastName!: string;
+  public Email!: string;
+  public Role!: 'user' | 'admin';
+}
+
+// Initialize the User model
 User.init({
-  userID: {
+  UserID: {
     type: DataTypes.INTEGER,
     autoIncrement: true,
     primaryKey: true,
-    field: 'userID' // Explicitly map to the 'userID' column in the database
+    field: 'user_id'
   },
   FirstName: {
     type: new DataTypes.STRING(128),
     allowNull: false,
-    field: 'FirstName'
+    field: 'first_name'
   },
   LastName: {
     type: new DataTypes.STRING(128),
     allowNull: false,
-    field: 'LastName'
+    field: 'last_name'
   },
-  email: {
+  Email: {
     type: new DataTypes.STRING(128),
     allowNull: false,
     unique: true,
     field: 'email'
   },
-  role: {
-    type: DataTypes.ENUM('user', 'admin'),
+  Role: {
+    type: new DataTypes.STRING(32),
     allowNull: false,
     defaultValue: 'user',
     field: 'role'
   },
 }, {
   sequelize,
-  tableName: 'Users', // Explicitly set the table name
-  timestamps: false // Disable timestamps if you don't have createdAt/updatedAt columns
+  tableName: 'users',
+  timestamps: false
 });
 
 export default User;
