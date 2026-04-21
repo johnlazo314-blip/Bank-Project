@@ -17,7 +17,7 @@ interface UserFormData {
   Role: 'user' | 'admin';
 }
 
-const API_BASE_URL = 'http://localhost:3002/api/users';
+const API_BASE_URL = `${import.meta.env.VITE_API_BASE_URL}/api/users`;
 
 const initialFormData: UserFormData = {
   FirstName: '',
