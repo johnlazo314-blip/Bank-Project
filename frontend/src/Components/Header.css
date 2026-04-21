@@ -42,3 +42,17 @@
 .nav-list a:hover {
   color: #4db8ff;
 }
+
+.logo a {
+  color: white;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.logo a:hover {
+  color: white;
+}
+
+.logo a:focus {
+  outline: none;
+}
