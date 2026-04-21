@@ -1,0 +1,121 @@
+.account-list-container {
+  margin-top: 20px;
+}
+
+.account-form {
+  display: grid;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.account-form input,
+.account-form select {
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+}
+
+.form-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.form-actions button,
+.cancel-btn {
+  padding: 10px 14px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.form-actions button[type='submit'] {
+  background-color: #007bff;
+  color: #fff;
+}
+
+.cancel-btn {
+  background-color: #6c757d;
+  color: #fff;
+}
+
+.error-message {
+  color: #b30000;
+  font-weight: 600;
+  margin-bottom: 10px;
+}
+
+.account-list {
+  list-style-type: none;
+  padding: 0;
+}
+
+.account-list-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  margin-bottom: 10px;
+  background-color: #f9f9f9;
+}
+
+.account-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex-grow: 1;
+}
+
+.account-type {
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 2px 8px;
+  border-radius: 12px;
+  width: fit-content;
+}
+
+.account-type.checking {
+  background-color: #dbeafe;
+  color: #1d4ed8;
+}
+
+.account-type.savings {
+  background-color: #dcfce7;
+  color: #15803d;
+}
+
+.account-balance {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #1a3a52;
+}
+
+.account-info small {
+  color: #666;
+}
+
+.account-actions button {
+  margin-left: 10px;
+  padding: 8px 12px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.account-actions button:first-of-type {
+  background-color: #007bff;
+  color: white;
+}
+
+.account-actions button:last-of-type {
+  background-color: #dc3545;
+  color: white;
+}
+
+.no-accounts {
+  color: #666;
+  font-style: italic;
+}

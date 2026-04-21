@@ -4,7 +4,7 @@ import User from '../models/User';
 const router = Router();
 
 // GET all users
-router.get('/', async (req: Request, res: Response) => {
+router.get('/', async (_req: Request, res: Response) => {
   try {
     const users = await User.findAll({
       attributes: ['UserID', 'FirstName', 'LastName', 'Email', 'Role']
@@ -17,7 +17,7 @@ router.get('/', async (req: Request, res: Response) => {
 });
 
 // GET a single user by ID
-router.get('/:id', async (req: Request, res: Response) => {
+router.get('/:id', async (req: Request<{ id: string }>, res: Response) => {
   try {
     const id = parseInt(req.params.id as string, 10);
     const user = await User.findByPk(id);
