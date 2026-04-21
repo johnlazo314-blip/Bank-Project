@@ -1,5 +1,6 @@
 import { Router, Request, Response } from 'express';
 import Account from '../models/Account';
+import User from '../models/User';
 
 const router = Router();
 
@@ -31,6 +32,12 @@ router.get('/:id', async (req: Request<{ id: string }>, res: Response) => {
 // POST a new account
 router.post('/', async (req: Request, res: Response) => {
   try {
+    const { UserID } = req.body;
+    const user = await User.findByPk(UserID);
+    if (!user) {
+      res.status(400).json({ message: `User with ID ${UserID} does not exist` });
+      return;
+    }
     const newAccount = await Account.create(req.body);
     res.status(201).json(newAccount);
   } catch (error) {

@@ -1,5 +1,5 @@
 import { useEffect, useState, type ChangeEvent, type FormEvent } from 'react';
-import axios from 'axios';
+import axios, { type AxiosError } from 'axios';
 import './AccountList.css';
 
 interface Account {
@@ -77,7 +77,9 @@ const AccountList = () => {
       await fetchAccounts();
       resetForm();
     } catch (err) {
-      setError(editingAccountId !== null ? 'Failed to update account' : 'Failed to create account');
+      const axiosErr = err as AxiosError<{ message: string }>;
+      const serverMsg = axiosErr.response?.data?.message;
+      setError(serverMsg ?? (editingAccountId !== null ? 'Failed to update account' : 'Failed to create account'));
       console.error(err);
     } finally {
       setSubmitting(false);
