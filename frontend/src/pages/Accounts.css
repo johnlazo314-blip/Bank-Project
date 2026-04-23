@@ -1,0 +1,10 @@
+.accounts-page {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.accounts-page h1 {
+  color: #1a3a52;
+  margin-bottom: 20px;
+}

@@ -3,6 +3,7 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import { connectDb } from './db';
 import userRoutes from './routes/users';
+import accountRoutes from './routes/accounts';
 
 dotenv.config();
 
@@ -15,6 +16,7 @@ app.use(express.json());
 
 // Routes
 app.use('/api/users', userRoutes);
+app.use('/api/accounts', accountRoutes);
 
 app.get('/', (req: Request, res: Response) => {
   res.send('Bank API is running!');
