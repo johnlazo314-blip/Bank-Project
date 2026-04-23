@@ -34,6 +34,11 @@ const UserList = () => {
   const [editingUserId, setEditingUserId] = useState<number | null>(null);
   const [formData, setFormData] = useState<UserFormData>(initialFormData);
 
+  const resetForm = () => {
+    setEditingUserId(null);
+    setFormData(initialFormData);
+  };
+
   useEffect(() => {
     fetchUsers();
   }, []);
