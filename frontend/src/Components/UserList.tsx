@@ -34,6 +34,10 @@ const UserList = () => {
   const [editingUserId, setEditingUserId] = useState<number | null>(null);
   const [formData, setFormData] = useState<UserFormData>(initialFormData);
 
+  useEffect(() => {
+    fetchUsers();
+  }, []);
+
   const fetchUsers = async () => {
     try {
       setLoading(true);
@@ -48,21 +52,12 @@ const UserList = () => {
     }
   };
 
-  useEffect(() => {
-    fetchUsers();
-  }, []);
-
-  const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+  const handleInputChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
-  const resetForm = () => {
-    setFormData(initialFormData);
-    setEditingUserId(null);
-  };
-
-  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+  const handleFormSubmit = async (e: FormEvent) => {
     e.preventDefault();
 
     try {
@@ -85,25 +80,25 @@ const UserList = () => {
     }
   };
 
-  const handleEdit = (user: User) => {
-    setEditingUserId(user.UserID);
-    setFormData({
-      FirstName: user.FirstName,
-      LastName: user.LastName,
-      Email: user.Email,
-      Role: user.Role
-    });
+  const handleCancel = () => {
+    setEditingUserId(null);
+    setFormData(initialFormData);
   };
 
-  const handleDelete = async (id: number) => {
+  const handleEdit = (user: User) => {
+    setEditingUserId(user.UserID);
+    setFormData({ FirstName: user.FirstName, LastName: user.LastName, Email: user.Email, Role: user.Role });
+  };
+
+  const handleDelete = async (userId: number) => {
     const confirmed = window.confirm('Are you sure you want to delete this user?');
     if (!confirmed) return;
 
     try {
       setError(null);
-      await axios.delete(`${API_BASE_URL}/${id}`);
+      await axios.delete(`${API_BASE_URL}/${userId}`);
       await fetchUsers();
-      if (editingUserId === id) {
+      if (editingUserId === userId) {
         resetForm();
       }
     } catch (err) {
@@ -116,15 +111,15 @@ const UserList = () => {
 
   return (
     <div className="user-list-container">
-      <h2>{editingUserId !== null ? 'Edit User' : 'Add New User'}</h2>
+      {error && <p className="error-message">{error}</p>}
 
-      <form className="user-form" onSubmit={handleSubmit}>
+      <form onSubmit={handleFormSubmit} className="user-form">
         <input
           type="text"
           name="FirstName"
           placeholder="First Name"
           value={formData.FirstName}
-          onChange={handleChange}
+          onChange={handleInputChange}
           required
         />
         <input
@@ -132,7 +127,7 @@ const UserList = () => {
           name="LastName"
           placeholder="Last Name"
           value={formData.LastName}
-          onChange={handleChange}
+          onChange={handleInputChange}
           required
         />
         <input
@@ -140,44 +135,50 @@ const UserList = () => {
           name="Email"
           placeholder="Email"
           value={formData.Email}
-          onChange={handleChange}
+          onChange={handleInputChange}
           required
         />
-        <select name="Role" value={formData.Role} onChange={handleChange}>
+        <select name="Role" value={formData.Role} onChange={handleInputChange}>
           <option value="user">User</option>
           <option value="admin">Admin</option>
         </select>
-
         <div className="form-actions">
           <button type="submit" disabled={submitting}>
-            {submitting ? 'Saving...' : editingUserId !== null ? 'Update User' : 'Create User'}
+            {submitting ? 'Saving...' : editingUserId ? 'Update User' : 'Add User'}
           </button>
-          {editingUserId !== null && (
-            <button type="button" className="cancel-btn" onClick={resetForm}>
+          {editingUserId && (
+            <button type="button" className="cancel-btn" onClick={handleCancel}>
               Cancel
             </button>
           )}
         </div>
       </form>
 
-      {error && <p className="error-message">{error}</p>}
-
-      <h2>Users</h2>
-      <ul className="user-list">
-        {users.map(user => (
-          <li key={user.UserID} className="user-list-item">
-            <div className="user-info">
-              <strong>{user.FirstName} {user.LastName}</strong> ({user.Role})
-              <br />
-              <small>{user.Email}</small>
-            </div>
+      <div className="user-list">
+        <div className="user-list-header">
+          <div>First Name</div>
+          <div>Last Name</div>
+          <div>Email</div>
+          <div>Role</div>
+          <div>Actions</div>
+        </div>
+        {users.map((user) => (
+          <div key={user.UserID} className="user-list-item">
+            <div>{user.FirstName}</div>
+            <div>{user.LastName}</div>
+            <div>{user.Email}</div>
+            <div>{user.Role}</div>
             <div className="user-actions">
-              <button onClick={() => handleEdit(user)}>Edit</button>
-              <button onClick={() => handleDelete(user.UserID)}>Delete</button>
+              <button className="edit-btn" onClick={() => handleEdit(user)}>
+                Edit
+              </button>
+              <button className="delete-btn" onClick={() => handleDelete(user.UserID)}>
+                Delete
+              </button>
             </div>
-          </li>
+          </div>
         ))}
-      </ul>
+      </div>
     </div>
   );
 };

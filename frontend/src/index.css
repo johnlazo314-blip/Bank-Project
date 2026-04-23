@@ -13,7 +13,11 @@
 
 body {
   margin: 0;
-  background: white;
+  font-family: 'Inter', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background-color: #F8F9FA;
+  color: #333333;
 }
 
 h1,
