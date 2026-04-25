@@ -1,7 +1,10 @@
+import { useAuthContext } from '@asgardeo/auth-react';
 import { Link } from 'react-router-dom';
 import './Header.css';
 
 export default function Header() {
+  const { state, signIn, signOut } = useAuthContext();
+
   return (
     <header className="header">
       <div className="header-container">
@@ -15,6 +18,16 @@ export default function Header() {
             <li><Link to="/users">User Management</Link></li>
           </ul>
         </nav>
+        <div className="auth-controls">
+          {state.isAuthenticated ? (
+            <>
+              <span>Hello, {state.username}</span>
+              <button onClick={() => signOut()}>Logout</button>
+            </>
+          ) : (
+            <button onClick={() => signIn()}>Login</button>
+          )}
+        </div>
       </div>
     </header>
   )
