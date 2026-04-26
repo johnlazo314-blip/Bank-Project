@@ -1,5 +1,6 @@
 import { useEffect, useState, type ChangeEvent, type FormEvent } from 'react';
-import axios from 'axios';
+import apiClient from '../api/apiClient';
+import { useUserContext } from '../context/UserContext';
 import './UserList.css';
 
 interface User {
@@ -17,8 +18,6 @@ interface UserFormData {
   Role: 'user' | 'admin';
 }
 
-const API_BASE_URL = `${import.meta.env.VITE_API_BASE_URL}/api/users`;
-
 const initialFormData: UserFormData = {
   FirstName: '',
   LastName: '',
@@ -27,6 +26,7 @@ const initialFormData: UserFormData = {
 };
 
 const UserList = () => {
+  const { isAdmin, dbUser } = useUserContext();
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
@@ -46,7 +46,7 @@ const UserList = () => {
   const fetchUsers = async () => {
     try {
       setLoading(true);
-      const response = await axios.get<User[]>(API_BASE_URL);
+      const response = await apiClient.get<User[]>('/api/users');
       setUsers(response.data);
       setError(null);
     } catch (err) {
@@ -64,17 +64,14 @@ const UserList = () => {
 
   const handleFormSubmit = async (e: FormEvent) => {
     e.preventDefault();
-
     try {
       setSubmitting(true);
       setError(null);
-
       if (editingUserId !== null) {
-        await axios.put(`${API_BASE_URL}/${editingUserId}`, formData);
+        await apiClient.put(`/api/users/${editingUserId}`, formData);
       } else {
-        await axios.post(API_BASE_URL, formData);
+        await apiClient.post('/api/users', formData);
       }
-
       await fetchUsers();
       resetForm();
     } catch (err) {
@@ -98,14 +95,11 @@ const UserList = () => {
   const handleDelete = async (userId: number) => {
     const confirmed = window.confirm('Are you sure you want to delete this user?');
     if (!confirmed) return;
-
     try {
       setError(null);
-      await axios.delete(`${API_BASE_URL}/${userId}`);
+      await apiClient.delete(`/api/users/${userId}`);
       await fetchUsers();
-      if (editingUserId === userId) {
-        resetForm();
-      }
+      if (editingUserId === userId) resetForm();
     } catch (err) {
       setError('Failed to delete user');
       console.error(err);
@@ -118,46 +112,50 @@ const UserList = () => {
     <div className="user-list-container">
       {error && <p className="error-message">{error}</p>}
 
-      <form onSubmit={handleFormSubmit} className="user-form">
-        <input
-          type="text"
-          name="FirstName"
-          placeholder="First Name"
-          value={formData.FirstName}
-          onChange={handleInputChange}
-          required
-        />
-        <input
-          type="text"
-          name="LastName"
-          placeholder="Last Name"
-          value={formData.LastName}
-          onChange={handleInputChange}
-          required
-        />
-        <input
-          type="email"
-          name="Email"
-          placeholder="Email"
-          value={formData.Email}
-          onChange={handleInputChange}
-          required
-        />
-        <select name="Role" value={formData.Role} onChange={handleInputChange}>
-          <option value="user">User</option>
-          <option value="admin">Admin</option>
-        </select>
-        <div className="form-actions">
-          <button type="submit" disabled={submitting}>
-            {submitting ? 'Saving...' : editingUserId ? 'Update User' : 'Add User'}
-          </button>
-          {editingUserId && (
-            <button type="button" className="cancel-btn" onClick={handleCancel}>
-              Cancel
-            </button>
+      {(isAdmin || editingUserId !== null) && (
+        <form onSubmit={handleFormSubmit} className="user-form">
+          <input
+            type="text"
+            name="FirstName"
+            placeholder="First Name"
+            value={formData.FirstName}
+            onChange={handleInputChange}
+            required
+          />
+          <input
+            type="text"
+            name="LastName"
+            placeholder="Last Name"
+            value={formData.LastName}
+            onChange={handleInputChange}
+            required
+          />
+          <input
+            type="email"
+            name="Email"
+            placeholder="Email"
+            value={formData.Email}
+            onChange={handleInputChange}
+            required
+          />
+          {isAdmin && (
+            <select name="Role" value={formData.Role} onChange={handleInputChange}>
+              <option value="user">User</option>
+              <option value="admin">Admin</option>
+            </select>
           )}
-        </div>
-      </form>
+          <div className="form-actions">
+            <button type="submit" disabled={submitting}>
+              {submitting ? 'Saving...' : editingUserId ? 'Update User' : 'Add User'}
+            </button>
+            {editingUserId && (
+              <button type="button" className="cancel-btn" onClick={handleCancel}>
+                Cancel
+              </button>
+            )}
+          </div>
+        </form>
+      )}
 
       <div className="user-list">
         <div className="user-list-header">
@@ -174,12 +172,16 @@ const UserList = () => {
             <div>{user.Email}</div>
             <div>{user.Role}</div>
             <div className="user-actions">
-              <button className="edit-btn" onClick={() => handleEdit(user)}>
-                Edit
-              </button>
-              <button className="delete-btn" onClick={() => handleDelete(user.UserID)}>
-                Delete
-              </button>
+              {(isAdmin || user.UserID === dbUser?.UserID) && (
+                <button className="edit-btn" onClick={() => handleEdit(user)}>
+                  Edit
+                </button>
+              )}
+              {isAdmin && (
+                <button className="delete-btn" onClick={() => handleDelete(user.UserID)}>
+                  Delete
+                </button>
+              )}
             </div>
           </div>
         ))}

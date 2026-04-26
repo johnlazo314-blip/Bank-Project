@@ -4,11 +4,16 @@ import User from '../models/User';
 
 const router = Router();
 
-// GET all accounts
+// GET all accounts — admin sees all, regular user sees only their own
 router.get('/', async (req: Request, res: Response) => {
   try {
-    const accounts = await Account.findAll();
-    res.json(accounts);
+    if (req.dbUser!.Role === 'admin') {
+      const accounts = await Account.findAll();
+      res.json(accounts);
+    } else {
+      const accounts = await Account.findAll({ where: { UserID: req.dbUser!.UserID } });
+      res.json(accounts);
+    }
   } catch (error) {
     res.status(500).json({ message: 'Error fetching accounts', error });
   }
@@ -19,20 +24,28 @@ router.get('/:id', async (req: Request<{ id: string }>, res: Response) => {
   try {
     const id = parseInt(req.params.id, 10);
     const account = await Account.findByPk(id);
-    if (account) {
-      res.json(account);
-    } else {
+    if (!account) {
       res.status(404).json({ message: 'Account not found' });
+      return;
     }
+    if (req.dbUser!.Role !== 'admin' && account.UserID !== req.dbUser!.UserID) {
+      res.status(403).json({ message: 'Forbidden' });
+      return;
+    }
+    res.json(account);
   } catch (error) {
     res.status(500).json({ message: 'Error fetching account', error });
   }
 });
 
-// POST a new account
+// POST a new account — regular users can only create for themselves
 router.post('/', async (req: Request, res: Response) => {
   try {
     const { UserID } = req.body;
+    if (req.dbUser!.Role !== 'admin' && UserID !== req.dbUser!.UserID) {
+      res.status(403).json({ message: 'Forbidden' });
+      return;
+    }
     const user = await User.findByPk(UserID);
     if (!user) {
       res.status(400).json({ message: `User with ID ${UserID} does not exist` });
@@ -49,9 +62,19 @@ router.post('/', async (req: Request, res: Response) => {
 router.put('/:id', async (req: Request<{ id: string }>, res: Response) => {
   try {
     const id = parseInt(req.params.id, 10);
-    const [updated] = await Account.update(req.body, {
-      where: { AccountID: id }
-    });
+    const account = await Account.findByPk(id);
+    if (!account) {
+      res.status(404).json({ message: 'Account not found' });
+      return;
+    }
+    if (req.dbUser!.Role !== 'admin' && account.UserID !== req.dbUser!.UserID) {
+      res.status(403).json({ message: 'Forbidden' });
+      return;
+    }
+    // Prevent non-admins from reassigning the account to another user
+    const { UserID: _stripped, ...safeBody } = req.body;
+    const updatePayload = req.dbUser!.Role === 'admin' ? req.body : safeBody;
+    const [updated] = await Account.update(updatePayload, { where: { AccountID: id } });
     if (updated) {
       const updatedAccount = await Account.findByPk(id);
       res.status(200).json(updatedAccount);
@@ -67,12 +90,17 @@ router.put('/:id', async (req: Request<{ id: string }>, res: Response) => {
 router.delete('/:id', async (req: Request<{ id: string }>, res: Response) => {
   try {
     const id = parseInt(req.params.id, 10);
-    const deleted = await Account.destroy({ where: { AccountID: id } });
-    if (deleted) {
-      res.status(204).send();
-    } else {
+    const account = await Account.findByPk(id);
+    if (!account) {
       res.status(404).json({ message: 'Account not found' });
+      return;
     }
+    if (req.dbUser!.Role !== 'admin' && account.UserID !== req.dbUser!.UserID) {
+      res.status(403).json({ message: 'Forbidden' });
+      return;
+    }
+    await Account.destroy({ where: { AccountID: id } });
+    res.status(204).send();
   } catch (error) {
     res.status(500).json({ message: 'Error deleting account', error });
   }

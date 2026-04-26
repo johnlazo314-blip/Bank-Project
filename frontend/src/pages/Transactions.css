@@ -1,0 +1,12 @@
+.transactions-page {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+.transactions-page h1 {
+  font-size: 1.75rem;
+  font-weight: 600;
+  color: #1a3a52;
+  margin-bottom: 1.5rem;
+}

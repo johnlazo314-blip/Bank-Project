@@ -1,9 +1,12 @@
 import express, { Request, Response } from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
+import { connectDb } from './db';
 import { checkJwt } from './middleware/auth';
+import { requireDbUser } from './middleware/requireDbUser';
 import userRoutes from './routes/users';
 import accountRoutes from './routes/accounts';
+import transactionRoutes from './routes/transactions';
 
 dotenv.config();
 
@@ -13,15 +16,24 @@ const port = Number(process.env.PORT) || 3001;
 app.use(cors());
 app.use(express.json());
 
-// Secure the user and account routes
-app.use('/api/users', checkJwt, userRoutes);
-app.use('/api/accounts', checkJwt, accountRoutes);
+app.use('/api/users', checkJwt, requireDbUser, userRoutes);
+app.use('/api/accounts', checkJwt, requireDbUser, accountRoutes);
+app.use('/api/transactions', checkJwt, requireDbUser, transactionRoutes);
 
-
-app.get('/', (req: Request, res: Response) => {
-  res.send('Simple server is running!');
+app.get('/', (_req: Request, res: Response) => {
+  res.send('NorthBank API is running!');
 });
 
-app.listen(port, () => {
-  console.log(`Simple server listening on http://localhost:${port}`);
-});
+const startServer = async () => {
+  try {
+    await connectDb();
+    app.listen(port, () => {
+      console.log(`Server running on http://localhost:${port}`);
+    });
+  } catch (error) {
+    console.error('Failed to start server:', error);
+    process.exit(1);
+  }
+};
+
+startServer();

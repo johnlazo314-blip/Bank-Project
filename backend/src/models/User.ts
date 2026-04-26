@@ -1,7 +1,6 @@
-import { DataTypes, Model } from 'sequelize';
+import { DataTypes, Model, Optional } from 'sequelize';
 import sequelize from '../db';
 
-// Define the attributes for the User model
 interface UserAttributes {
   UserID: number;
   FirstName: string;
@@ -10,8 +9,9 @@ interface UserAttributes {
   Role: 'user' | 'admin';
 }
 
-// Create the User model class
-class User extends Model<UserAttributes> implements UserAttributes {
+type UserCreationAttributes = Optional<UserAttributes, 'UserID'>;
+
+class User extends Model<UserAttributes, UserCreationAttributes> implements UserAttributes {
   public UserID!: number;
   public FirstName!: string;
   public LastName!: string;

@@ -1,4 +1,4 @@
-import { DataTypes, Model } from 'sequelize';
+import { DataTypes, Model, Optional } from 'sequelize';
 import sequelize from '../db';
 import User from './User';
 
@@ -9,7 +9,9 @@ interface AccountAttributes {
   Balance: number;
 }
 
-class Account extends Model<AccountAttributes> implements AccountAttributes {
+type AccountCreationAttributes = Optional<AccountAttributes, 'AccountID'>;
+
+class Account extends Model<AccountAttributes, AccountCreationAttributes> implements AccountAttributes {
   public AccountID!: number;
   public UserID!: number;
   public AccountType!: 'checking' | 'savings';

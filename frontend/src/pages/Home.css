@@ -1,66 +1,41 @@
 .home-container {
-  /* padding-top is removed */
-}
-
-.hero-section {
-  background-color: #004C97; /* Primary Blue */
-  color: white;
-  padding: 4rem 2rem;
-  text-align: center;
-  /* margin-top is removed */
-}
-
-.hero-content h1 {
-  font-size: 2.5rem;
-  font-weight: 600;
-  margin-bottom: 1rem;
-}
-
-.hero-content p {
-  font-size: 1.2rem;
-}
-
-.features-section {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: calc(100vh - 70px);
   gap: 2rem;
-  padding: 2rem;
-  max-width: 1200px;
-  margin: 0 auto;
 }
 
-.feature-card {
-  background-color: #FFFFFF;
-  border: 1px solid #DEE2E6;
-  border-top: 4px solid #004C97; /* Added blue top border */
-  border-radius: 8px;
-  padding: 2rem;
-  text-align: center;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-  transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+.home-logo {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: #004C97;
+  margin: 0;
 }
 
-.feature-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-}
-
-.feature-card h2 {
-  font-size: 1.5rem;
+.home-signin-btn {
+  background-color: #004C97;
+  color: white;
+  border: none;
+  padding: 0.875rem 2.5rem;
+  font-size: 1rem;
   font-weight: 600;
-  margin-bottom: 1rem;
-  color: #004C97; /* Primary Blue */
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.2s ease;
 }
 
-/* Media query to stack to a single column on smaller screens */
-@media (max-width: 768px) {
-  .features-section {
-    grid-template-columns: 1fr;
-  }
+.home-signin-btn:hover {
+  background-color: #003a75;
+  transform: translateY(-2px);
 }
 
-.description {
+.home-loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 60vh;
   font-size: 1.1rem;
   color: #666;
-  margin: 1rem 0;
 }

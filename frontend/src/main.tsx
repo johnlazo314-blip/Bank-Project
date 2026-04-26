@@ -9,7 +9,7 @@ const authConfig = {
     signOutRedirectURL: "http://localhost:5173",
     clientID: import.meta.env.VITE_ASGARDEO_CLIENT_ID,
     baseUrl: import.meta.env.VITE_ASGARDEO_BASE_URL,
-    scope: [ "openid", "profile" ]
+    scope: [ "openid", "profile", "email" ]
 };
 
 createRoot(document.getElementById('root')!).render(

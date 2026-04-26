@@ -1,0 +1,164 @@
+.tx-container {
+  margin-top: 1rem;
+}
+
+.tx-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.tx-count {
+  font-size: 0.9rem;
+  color: #666;
+}
+
+.tx-filters {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.tx-filter-btn {
+  padding: 0.375rem 0.875rem;
+  border: 1px solid #DEE2E6;
+  border-radius: 20px;
+  background: #fff;
+  color: #333;
+  font-size: 0.85rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.tx-filter-btn:hover {
+  border-color: #004C97;
+  color: #004C97;
+}
+
+.tx-filter-btn.active {
+  background-color: #004C97;
+  border-color: #004C97;
+  color: white;
+}
+
+.tx-loading,
+.tx-empty {
+  color: #666;
+  font-style: italic;
+  padding: 2rem 0;
+  text-align: center;
+}
+
+.tx-error {
+  color: #b30000;
+  font-weight: 600;
+  padding: 1rem 0;
+}
+
+.tx-list {
+  border: 1px solid #DEE2E6;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.tx-list-header,
+.tx-row {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr;
+  gap: 1rem;
+  padding: 0.75rem 1rem;
+  align-items: center;
+}
+
+.tx-list-header {
+  background-color: #f8f9fa;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #666;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border-bottom: 1px solid #DEE2E6;
+}
+
+.tx-row {
+  border-bottom: 1px solid #f0f0f0;
+  background: #fff;
+  transition: background 0.1s;
+}
+
+.tx-row:last-child {
+  border-bottom: none;
+}
+
+.tx-row:hover {
+  background-color: #f8f9fa;
+}
+
+.tx-date {
+  font-size: 0.9rem;
+  color: #444;
+}
+
+.tx-type-badge {
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  padding: 3px 10px;
+  border-radius: 12px;
+  width: fit-content;
+}
+
+.tx-type-badge.deposit {
+  background-color: #dcfce7;
+  color: #15803d;
+}
+
+.tx-type-badge.withdrawal {
+  background-color: #fee2e2;
+  color: #b91c1c;
+}
+
+.tx-type-badge.transfer {
+  background-color: #dbeafe;
+  color: #1d4ed8;
+}
+
+.tx-account,
+.tx-transfer {
+  font-size: 0.9rem;
+  color: #555;
+}
+
+.tx-amount-col {
+  text-align: right;
+}
+
+.tx-amount {
+  font-size: 0.95rem;
+  font-weight: 700;
+  text-align: right;
+}
+
+.tx-amount.positive {
+  color: #15803d;
+}
+
+.tx-amount.negative {
+  color: #b91c1c;
+}
+
+@media (max-width: 640px) {
+  .tx-list-header,
+  .tx-row {
+    grid-template-columns: 1.5fr 1fr 1fr;
+  }
+
+  .tx-date {
+    font-size: 0.8rem;
+  }
+}

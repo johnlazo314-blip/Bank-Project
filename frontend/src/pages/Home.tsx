@@ -1,29 +1,28 @@
+import { useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useAuthContext } from '@asgardeo/auth-react';
 import './Home.css';
 
 const Home = () => {
+  const { state, signIn } = useAuthContext();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (state.isAuthenticated) {
+      navigate('/dashboard');
+    }
+  }, [state.isAuthenticated, navigate]);
+
+  if (state.isLoading) {
+    return <div className="home-loading">Loading...</div>;
+  }
+
   return (
     <div className="home-container">
-      <section className="hero-section">
-        <div className="hero-content">
-          <h1>Welcome to Your Bank</h1>
-          <p>Simple, secure, and convenient banking at your fingertips.</p>
-        </div>
-      </section>
-
-      <section className="features-section">
-        <div className="feature-card">
-          <h2>Manage Users</h2>
-          <p>Easily add, edit, and manage user accounts.</p>
-        </div>
-        <div className="feature-card">
-          <h2>View Accounts</h2>
-          <p>Check account balances and details in real-time.</p>
-        </div>
-        <div className="feature-card">
-          <h2>Track Transactions</h2>
-          <p>Keep an eye on all incoming and outgoing transactions.</p>
-        </div>
-      </section>
+      <h1 className="home-logo">NorthBank</h1>
+      <button className="home-signin-btn" onClick={() => signIn()}>
+        Sign In / Create Account
+      </button>
     </div>
   );
 };

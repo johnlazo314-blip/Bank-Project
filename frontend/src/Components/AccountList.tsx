@@ -1,5 +1,7 @@
 import { useEffect, useState, type ChangeEvent, type FormEvent } from 'react';
-import axios, { type AxiosError } from 'axios';
+import { type AxiosError } from 'axios';
+import apiClient from '../api/apiClient';
+import { useUserContext } from '../context/UserContext';
 import './AccountList.css';
 
 interface Account {
@@ -15,8 +17,6 @@ interface AccountFormData {
   Balance: string;
 }
 
-const API_BASE_URL = `${import.meta.env.VITE_API_BASE_URL}/api/accounts`;
-
 const initialFormData: AccountFormData = {
   UserID: '',
   AccountType: 'checking',
@@ -24,6 +24,7 @@ const initialFormData: AccountFormData = {
 };
 
 const AccountList = () => {
+  const { isAdmin, dbUser } = useUserContext();
   const [accounts, setAccounts] = useState<Account[]>([]);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
@@ -34,7 +35,7 @@ const AccountList = () => {
   const fetchAccounts = async () => {
     try {
       setLoading(true);
-      const response = await axios.get<Account[]>(API_BASE_URL);
+      const response = await apiClient.get<Account[]>('/api/accounts');
       setAccounts(response.data);
       setError(null);
     } catch (err) {
@@ -64,15 +65,16 @@ const AccountList = () => {
     try {
       setSubmitting(true);
       setError(null);
+      const userID = isAdmin ? parseInt(formData.UserID, 10) : dbUser!.UserID;
       const payload = {
-        ...formData,
-        UserID: parseInt(formData.UserID, 10),
+        UserID: userID,
+        AccountType: formData.AccountType,
         Balance: parseFloat(formData.Balance),
       };
       if (editingAccountId !== null) {
-        await axios.put(`${API_BASE_URL}/${editingAccountId}`, payload);
+        await apiClient.put(`/api/accounts/${editingAccountId}`, payload);
       } else {
-        await axios.post(API_BASE_URL, payload);
+        await apiClient.post('/api/accounts', payload);
       }
       await fetchAccounts();
       resetForm();
@@ -99,7 +101,7 @@ const AccountList = () => {
     if (!window.confirm('Are you sure you want to delete this account?')) return;
     try {
       setError(null);
-      await axios.delete(`${API_BASE_URL}/${id}`);
+      await apiClient.delete(`/api/accounts/${id}`);
       await fetchAccounts();
       if (editingAccountId === id) resetForm();
     } catch (err) {
@@ -118,15 +120,17 @@ const AccountList = () => {
       <h2>{editingAccountId !== null ? 'Edit Account' : 'Add New Account'}</h2>
 
       <form className="account-form" onSubmit={handleSubmit}>
-        <input
-          type="number"
-          name="UserID"
-          placeholder="User ID"
-          value={formData.UserID}
-          onChange={handleChange}
-          required
-          min="1"
-        />
+        {isAdmin && (
+          <input
+            type="number"
+            name="UserID"
+            placeholder="User ID"
+            value={formData.UserID}
+            onChange={handleChange}
+            required
+            min="1"
+          />
+        )}
         <select name="AccountType" value={formData.AccountType} onChange={handleChange}>
           <option value="checking">Checking</option>
           <option value="savings">Savings</option>
@@ -165,7 +169,10 @@ const AccountList = () => {
                 {account.AccountType.charAt(0).toUpperCase() + account.AccountType.slice(1)}
               </strong>
               <span className="account-balance">{formatBalance(account.Balance)}</span>
-              <small>User ID: {account.UserID} &nbsp;·&nbsp; Account #{account.AccountID}</small>
+              <small>
+                {isAdmin && <>User ID: {account.UserID} &nbsp;·&nbsp; </>}
+                Account #{account.AccountID}
+              </small>
             </div>
             <div className="account-actions">
               <button onClick={() => handleEdit(account)}>Edit</button>
