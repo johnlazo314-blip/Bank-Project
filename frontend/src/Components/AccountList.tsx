@@ -1,6 +1,6 @@
 import { useEffect, useState, type ChangeEvent, type FormEvent } from 'react';
 import axios, { type AxiosError } from 'axios';
-import { getAuthToken } from '../auth';
+import { getAuthToken, getCurrentUserRole } from '../auth';
 import './AccountList.css';
 
 interface Account {
@@ -22,6 +22,14 @@ interface UserOption {
   LastName: string;
 }
 
+interface CurrentUser {
+  UserID: number;
+  FirstName: string;
+  LastName: string;
+  Email: string;
+  Role: 'user' | 'admin';
+}
+
 const API_BASE_URL = `${import.meta.env.VITE_API_BASE_URL}/api/accounts`;
 const USERS_API_BASE_URL = `${import.meta.env.VITE_API_BASE_URL}/api/users`;
 
@@ -40,11 +48,14 @@ const initialFormData: AccountFormData = {
 const AccountList = () => {
   const [accounts, setAccounts] = useState<Account[]>([]);
   const [users, setUsers] = useState<UserOption[]>([]);
+  const [currentUser, setCurrentUser] = useState<CurrentUser | null>(null);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [editingAccountId, setEditingAccountId] = useState<number | null>(null);
   const [formData, setFormData] = useState<AccountFormData>(initialFormData);
+  const currentRole = getCurrentUserRole();
+  const isAdmin = currentRole === 'admin';
 
   const fetchAccounts = async () => {
     try {
@@ -71,6 +82,16 @@ const AccountList = () => {
   };
 
   useEffect(() => {
+    const storedUser = localStorage.getItem('current_user');
+
+    if (storedUser) {
+      try {
+        setCurrentUser(JSON.parse(storedUser) as CurrentUser);
+      } catch {
+        setCurrentUser(null);
+      }
+    }
+
     fetchAccounts();
     fetchUsers();
   }, []);
@@ -96,15 +117,24 @@ const AccountList = () => {
         Balance: parseFloat(formData.Balance),
       };
 
-      if (!users.some(user => user.UserID === payload.UserID)) {
-        setError('Select a valid user before creating an account.');
+      if (isAdmin) {
+        if (!users.some(user => user.UserID === payload.UserID)) {
+          setError('Select a valid user before creating an account.');
+          return;
+        }
+      } else if (!currentUser) {
+        setError('Unable to determine the logged in user. Please sign in again.');
         return;
       }
 
       if (editingAccountId !== null) {
           await axios.put(`${API_BASE_URL}/${editingAccountId}`, payload, { headers: getAuthHeaders() });
       } else {
-          await axios.post(API_BASE_URL, payload, { headers: getAuthHeaders() });
+          await axios.post(
+            API_BASE_URL,
+            isAdmin ? payload : { AccountType: payload.AccountType, Balance: payload.Balance },
+            { headers: getAuthHeaders() }
+          );
       }
       await fetchAccounts();
       resetForm();
@@ -152,16 +182,27 @@ const AccountList = () => {
       <h2>{editingAccountId !== null ? 'Edit Account' : 'Add New Account'}</h2>
 
       <form className="account-form" onSubmit={handleSubmit}>
-        <select name="UserID" value={formData.UserID} onChange={handleChange} required>
-          <option value="" disabled>
-            Select User
-          </option>
-          {users.map(user => (
-            <option key={user.UserID} value={user.UserID}>
-              #{user.UserID} - {user.FirstName} {user.LastName}
+        {isAdmin ? (
+          <select name="UserID" value={formData.UserID} onChange={handleChange} required>
+            <option value="" disabled>
+              Select User
             </option>
-          ))}
-        </select>
+            {users.map(user => (
+              <option key={user.UserID} value={user.UserID}>
+                #{user.UserID} - {user.FirstName} {user.LastName}
+              </option>
+            ))}
+          </select>
+        ) : (
+          <div className="account-form-readonly">
+            <label>Account owner</label>
+            <div>
+              {currentUser
+                ? `#${currentUser.UserID} - ${currentUser.FirstName} ${currentUser.LastName}`
+                : 'Current logged in user'}
+            </div>
+          </div>
+        )}
         <select name="AccountType" value={formData.AccountType} onChange={handleChange}>
           <option value="checking">Checking</option>
           <option value="savings">Savings</option>

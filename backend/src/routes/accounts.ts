@@ -122,8 +122,9 @@ router.put('/:id', async (req: Request<{ id: string }>, res: Response) => {
     const authReq = req as AuthenticatedRequest;
     const admin = isAdminUser(currentUser.Role, authReq.auth?.tokenRole);
     const id = parseInt(req.params.id, 10);
+    const updatePayload = admin ? req.body : { ...req.body, UserID: currentUser.UserID };
 
-    const [updated] = await Account.update(req.body, {
+    const [updated] = await Account.update(updatePayload, {
       where: admin ? { AccountID: id } : { AccountID: id, UserID: currentUser.UserID }
     });
 
