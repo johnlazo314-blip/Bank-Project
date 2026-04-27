@@ -2,6 +2,29 @@
 
 This is a full-stack web application for a bank project. It includes a React frontend and a Node.js/Express backend.
 
+## What The Website Does
+
+NorthBank is a banking portal for viewing accounts, managing users, and making transactions.
+
+- The home page provides clickable banners that take users to the main parts of the site.
+- The Accounts page lets users view their accounts, balances, and account details.
+- The Transactions page lets users deposit, withdraw, and transfer money.
+- The User Management page is available only to admin users and is used to create, edit, and delete users and accounts.
+- Authentication is handled through Asgardeo, and the backend matches the logged-in Asgardeo identity to the corresponding database user.
+
+## Adding A New User
+
+To add a new user to the system, sign in with an admin account first.
+
+1. Open the User Management page.
+2. Add the new user's information in the form, including the email address that will also be used for Asgardeo.
+3. Save the new user.
+4. The new user must then click the Login button and sign in through Asgardeo.
+5. If the user does not already exist in Asgardeo, create the account there using the same email address that was used when the admin created the user record.
+6. After the Asgardeo account exists, log in again with that new account.
+
+The email address must match between the admin-created user record and the Asgardeo account so the app can connect the login session to the correct database user.
+
 ## Prerequisites
 
 Before you begin, ensure you have the following installed:
