@@ -1,4 +1,4 @@
-import { useEffect, useState, type ChangeEvent, type FormEvent } from 'react';
+import { useEffect, useState, type ChangeEvent } from 'react';
 import { type AxiosError } from 'axios';
 import apiClient from '../api/apiClient';
 import { useUserContext } from '../context/UserContext';
@@ -60,7 +60,7 @@ const AccountList = () => {
     setEditingAccountId(null);
   };
 
-  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: { preventDefault(): void }) => {
     e.preventDefault();
     try {
       setSubmitting(true);

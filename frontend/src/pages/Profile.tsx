@@ -1,4 +1,4 @@
-import { useState, type FormEvent } from 'react';
+import { useState } from 'react';
 import { useUserContext } from '../context/UserContext';
 import apiClient from '../api/apiClient';
 import './Profile.css';
@@ -16,7 +16,7 @@ const Profile = () => {
 
   if (!dbUser) return <p className="profile-loading">Loading profile...</p>;
 
-  const handleSubmit = async (e: FormEvent) => {
+  const handleSubmit = async (e: { preventDefault(): void }) => {
     e.preventDefault();
     setSaving(true);
     setError(null);

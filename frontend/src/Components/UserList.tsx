@@ -1,4 +1,4 @@
-import { useEffect, useState, type ChangeEvent, type FormEvent } from 'react';
+import { useEffect, useState, type ChangeEvent } from 'react';
 import apiClient from '../api/apiClient';
 import { useUserContext } from '../context/UserContext';
 import './UserList.css';
@@ -62,7 +62,7 @@ const UserList = () => {
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
-  const handleFormSubmit = async (e: FormEvent) => {
+  const handleFormSubmit = async (e: { preventDefault(): void }) => {
     e.preventDefault();
     try {
       setSubmitting(true);
