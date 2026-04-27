@@ -5,8 +5,8 @@ import './index.css'
 import App from './App.tsx'
 
 const authConfig = {
-    signInRedirectURL: import.meta.env.VITE_APP_URL ?? window.location.origin,
-    signOutRedirectURL: import.meta.env.VITE_APP_URL ?? window.location.origin,
+    signInRedirectURL: window.location.origin,
+    signOutRedirectURL: window.location.origin,
     clientID: import.meta.env.VITE_ASGARDEO_CLIENT_ID,
     baseUrl: import.meta.env.VITE_ASGARDEO_BASE_URL,
     scope: [ "openid", "profile", "email" ]
