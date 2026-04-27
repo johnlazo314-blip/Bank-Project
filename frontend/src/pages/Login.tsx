@@ -59,7 +59,8 @@ const Login = () => {
           throw lastError ?? new Error('Unable to authenticate with Asgardeo tokens');
         }
 
-        navigate('/accounts');
+        // Reload page to update header and all components with fresh auth state
+        window.location.href = '/accounts';
       } catch (err) {
         const axiosErr = err as AxiosError<{ message: string }>;
         setError(axiosErr.response?.data?.message ?? 'Failed to complete sign-in');
