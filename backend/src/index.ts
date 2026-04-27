@@ -4,6 +4,8 @@ import dotenv from 'dotenv';
 import { connectDb } from './db';
 import userRoutes from './routes/users';
 import accountRoutes from './routes/accounts';
+import './models/User';
+import './models/Account';
 
 dotenv.config();
 

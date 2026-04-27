@@ -1,5 +1,6 @@
 import { useEffect, useState, type ChangeEvent, type FormEvent } from 'react';
 import axios, { type AxiosError } from 'axios';
+import { getAuthToken } from '../auth';
 import './AccountList.css';
 
 interface Account {
@@ -15,7 +16,20 @@ interface AccountFormData {
   Balance: string;
 }
 
+interface UserOption {
+  UserID: number;
+  FirstName: string;
+  LastName: string;
+}
+
 const API_BASE_URL = `${import.meta.env.VITE_API_BASE_URL}/api/accounts`;
+const USERS_API_BASE_URL = `${import.meta.env.VITE_API_BASE_URL}/api/users`;
+
+const getAuthHeaders = () => {
+  const token = getAuthToken();
+
+  return token ? { Authorization: `Bearer ${token}` } : {};
+};
 
 const initialFormData: AccountFormData = {
   UserID: '',
@@ -25,6 +39,7 @@ const initialFormData: AccountFormData = {
 
 const AccountList = () => {
   const [accounts, setAccounts] = useState<Account[]>([]);
+  const [users, setUsers] = useState<UserOption[]>([]);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -34,19 +49,30 @@ const AccountList = () => {
   const fetchAccounts = async () => {
     try {
       setLoading(true);
-      const response = await axios.get<Account[]>(API_BASE_URL);
+        const response = await axios.get<Account[]>(API_BASE_URL, { headers: getAuthHeaders() });
       setAccounts(response.data);
       setError(null);
     } catch (err) {
-      setError('Failed to fetch accounts');
+        const axiosErr = err as AxiosError<{ message: string }>;
+        setError(axiosErr.response?.data?.message ?? 'Failed to fetch accounts');
       console.error(err);
     } finally {
       setLoading(false);
     }
   };
 
+  const fetchUsers = async () => {
+    try {
+        const response = await axios.get<UserOption[]>(USERS_API_BASE_URL, { headers: getAuthHeaders() });
+      setUsers(response.data);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
   useEffect(() => {
     fetchAccounts();
+    fetchUsers();
   }, []);
 
   const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
@@ -69,10 +95,16 @@ const AccountList = () => {
         UserID: parseInt(formData.UserID, 10),
         Balance: parseFloat(formData.Balance),
       };
+
+      if (!users.some(user => user.UserID === payload.UserID)) {
+        setError('Select a valid user before creating an account.');
+        return;
+      }
+
       if (editingAccountId !== null) {
-        await axios.put(`${API_BASE_URL}/${editingAccountId}`, payload);
+          await axios.put(`${API_BASE_URL}/${editingAccountId}`, payload, { headers: getAuthHeaders() });
       } else {
-        await axios.post(API_BASE_URL, payload);
+          await axios.post(API_BASE_URL, payload, { headers: getAuthHeaders() });
       }
       await fetchAccounts();
       resetForm();
@@ -99,11 +131,13 @@ const AccountList = () => {
     if (!window.confirm('Are you sure you want to delete this account?')) return;
     try {
       setError(null);
-      await axios.delete(`${API_BASE_URL}/${id}`);
+      await axios.delete(`${API_BASE_URL}/${id}`, { headers: getAuthHeaders() });
       await fetchAccounts();
       if (editingAccountId === id) resetForm();
     } catch (err) {
-      setError('Failed to delete account');
+      const axiosErr = err as AxiosError<{ message: string }>;
+      const serverMsg = axiosErr.response?.data?.message;
+      setError(serverMsg ?? 'Failed to delete account');
       console.error(err);
     }
   };
@@ -118,15 +152,16 @@ const AccountList = () => {
       <h2>{editingAccountId !== null ? 'Edit Account' : 'Add New Account'}</h2>
 
       <form className="account-form" onSubmit={handleSubmit}>
-        <input
-          type="number"
-          name="UserID"
-          placeholder="User ID"
-          value={formData.UserID}
-          onChange={handleChange}
-          required
-          min="1"
-        />
+        <select name="UserID" value={formData.UserID} onChange={handleChange} required>
+          <option value="" disabled>
+            Select User
+          </option>
+          {users.map(user => (
+            <option key={user.UserID} value={user.UserID}>
+              #{user.UserID} - {user.FirstName} {user.LastName}
+            </option>
+          ))}
+        </select>
         <select name="AccountType" value={formData.AccountType} onChange={handleChange}>
           <option value="checking">Checking</option>
           <option value="savings">Savings</option>

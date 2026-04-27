@@ -14,38 +14,33 @@ User.init({
         type: sequelize_1.DataTypes.INTEGER,
         autoIncrement: true,
         primaryKey: true,
-        field: 'UserID'
+        field: 'user_id'
     },
     FirstName: {
         type: new sequelize_1.DataTypes.STRING(128),
         allowNull: false,
-        field: 'FirstName'
+        field: 'first_name'
     },
     LastName: {
         type: new sequelize_1.DataTypes.STRING(128),
         allowNull: false,
-        field: 'LastName'
+        field: 'last_name'
     },
     Email: {
         type: new sequelize_1.DataTypes.STRING(128),
         allowNull: false,
         unique: true,
-        field: 'Email'
-    },
-    Password: {
-        type: new sequelize_1.DataTypes.STRING(255),
-        allowNull: false,
-        field: 'Password'
+        field: 'email'
     },
     Role: {
-        type: sequelize_1.DataTypes.ENUM('user', 'admin'),
+        type: new sequelize_1.DataTypes.STRING(32),
         allowNull: false,
         defaultValue: 'user',
-        field: 'Role'
+        field: 'role'
     },
 }, {
     sequelize: db_1.default,
-    tableName: 'Users',
+    tableName: 'users',
     timestamps: false
 });
 exports.default = User;

@@ -1,9 +1,11 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Header from './Components/Header';
 import Footer from './Components/Footer';
+import ProtectedRoute from './Components/ProtectedRoute';
 import Home from './pages/Home';
 import UserManagement from './pages/UserManagement';
 import Accounts from './pages/Accounts';
+import Login from './pages/Login';
 import './App.css';
 
 function App() {
@@ -14,8 +16,23 @@ function App() {
         <main>
           <Routes>
             <Route path="/" element={<Home />} />
-            <Route path="/users" element={<UserManagement />} />
-            <Route path="/accounts" element={<Accounts />} />
+            <Route path="/login" element={<Login />} />
+            <Route
+              path="/users"
+              element={(
+                <ProtectedRoute allowedRoles={['admin']}>
+                  <UserManagement />
+                </ProtectedRoute>
+              )}
+            />
+            <Route
+              path="/accounts"
+              element={(
+                <ProtectedRoute>
+                  <Accounts />
+                </ProtectedRoute>
+              )}
+            />
           </Routes>
         </main>
         <Footer />

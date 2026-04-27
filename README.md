@@ -42,6 +42,31 @@ This project uses PostgreSQL as the database.
     ```
     Replace `USER`, `PASSWORD`, `HOST`, `PORT`, and `DATABASE_NAME` with your database credentials.
 
+## Asgardeo Login Integration
+
+The app uses Asgardeo only (no local/dev login endpoint).
+
+1. In `frontend/.env`, set:
+
+    - `VITE_ASGARDEO_BASE_URL` (example: `https://api.asgardeo.io/t/<org_name>`)
+    - `VITE_ASGARDEO_CLIENT_ID`
+
+2. In `backend/.env`, set:
+
+    - `ASGARDEO_BASE_URL` (same tenant base URL)
+    - `ASGARDEO_CLIENT_ID` (same app/client id)
+
+3. In Asgardeo app settings, add these callback URLs:
+
+    - Sign-in redirect URL: `http://localhost:5173/login`
+    - Sign-out redirect URL: `http://localhost:5173/login`
+
+4. Ensure OIDC scopes include `openid profile email`.
+
+5. Backend verifies access tokens against Asgardeo OIDC discovery/JWKS and enforces row-level authorization by matching claims email/username to your DB user row.
+
+6. Clicking "Login with Asgardeo" redirects to Asgardeo. After successful login, the app stores the token and calls `/api/users/me` to map the Asgardeo identity to your DB user and role.
+
 ## Running the Application for Development
 
 You will need to run both the backend and frontend servers in separate terminals for local development.

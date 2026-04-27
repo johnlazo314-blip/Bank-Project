@@ -1,7 +1,37 @@
 import { Router, Request, Response } from 'express';
 import User from '../models/User';
+import { AuthenticatedRequest, requireAuth } from '../middleware/auth';
 
 const router = Router();
+
+const errorMessage = (error: unknown) =>
+  error instanceof Error ? error.message : 'Unknown error';
+
+router.get('/me', requireAuth, async (req: Request, res: Response) => {
+  try {
+    const authReq = req as AuthenticatedRequest;
+    const email = authReq.auth?.email;
+
+    if (!email) {
+      res.status(401).json({ message: 'Missing authenticated user email' });
+      return;
+    }
+
+    const user = await User.findOne({
+      where: { Email: email },
+      attributes: ['UserID', 'FirstName', 'LastName', 'Email', 'Role'],
+    });
+
+    if (!user) {
+      res.status(404).json({ message: `No user found for email ${email}` });
+      return;
+    }
+
+    res.json(user);
+  } catch (error) {
+    res.status(500).json({ message: 'Error fetching authenticated user', error: errorMessage(error) });
+  }
+});
 
 // GET all users
 router.get('/', async (_req: Request, res: Response) => {
@@ -12,7 +42,7 @@ router.get('/', async (_req: Request, res: Response) => {
     res.json(users);
   } catch (error) {
     console.error('Error fetching users:', error); // Log the full error to the backend console
-    res.status(500).json({ message: 'Error fetching users', error });
+    res.status(500).json({ message: 'Error fetching users', error: errorMessage(error) });
   }
 });
 
@@ -27,7 +57,7 @@ router.get('/:id', async (req: Request<{ id: string }>, res: Response) => {
       res.status(404).json({ message: 'User not found' });
     }
   } catch (error) {
-    res.status(500).json({ message: 'Error fetching user', error });
+    res.status(500).json({ message: 'Error fetching user', error: errorMessage(error) });
   }
 });
 
@@ -37,7 +67,7 @@ router.post('/', async (req: Request, res: Response) => {
     const newUser = await User.create(req.body);
     res.status(201).json(newUser);
   } catch (error) {
-    res.status(500).json({ message: 'Error creating user', error });
+    res.status(500).json({ message: 'Error creating user', error: errorMessage(error) });
   }
 });
 
@@ -55,7 +85,7 @@ router.put('/:id', async (req: Request, res: Response) => {
       res.status(404).json({ message: 'User not found' });
     }
   } catch (error) {
-    res.status(500).json({ message: 'Error updating user', error });
+    res.status(500).json({ message: 'Error updating user', error: errorMessage(error) });
   }
 });
 
@@ -72,7 +102,7 @@ router.delete('/:id', async (req: Request, res: Response) => {
       res.status(404).json({ message: 'User not found' });
     }
   } catch (error) {
-    res.status(500).json({ message: 'Error deleting user', error });
+    res.status(500).json({ message: 'Error deleting user', error: errorMessage(error) });
   }
 });
 

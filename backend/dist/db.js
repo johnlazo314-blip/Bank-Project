@@ -16,23 +16,28 @@ exports.connectDb = void 0;
 const sequelize_1 = require("sequelize");
 const dotenv_1 = __importDefault(require("dotenv"));
 dotenv_1.default.config();
+const useSsl = process.env.DB_SSL === 'true' || process.env.NODE_ENV === 'production';
 const sequelize = new sequelize_1.Sequelize(process.env.DATABASE_URL, {
     dialect: 'postgres',
     protocol: 'postgres',
-    dialectOptions: {
-        ssl: {
-            require: true,
-            rejectUnauthorized: false, // Required for Neon
-        },
-    },
+    dialectOptions: useSsl
+        ? {
+            ssl: {
+                require: true,
+                rejectUnauthorized: false,
+            },
+        }
+        : undefined,
 });
 const connectDb = () => __awaiter(void 0, void 0, void 0, function* () {
     try {
         yield sequelize.authenticate();
-        console.log('✅ Connection has been established successfully.');
+        yield sequelize.sync({ alter: false });
+        console.log('Database connected and models synced.');
     }
     catch (error) {
         console.error('Unable to connect to the database:', error);
+        throw error;
     }
 });
 exports.connectDb = connectDb;
