@@ -5,6 +5,7 @@ import ProtectedRoute from './Components/ProtectedRoute';
 import Home from './pages/Home';
 import UserManagement from './pages/UserManagement';
 import Accounts from './pages/Accounts';
+import Transaction from './pages/Transaction';
 import Login from './pages/Login';
 import './App.css';
 
@@ -30,6 +31,14 @@ function App() {
               element={(
                 <ProtectedRoute>
                   <Accounts />
+                </ProtectedRoute>
+              )}
+            />
+            <Route
+              path="/transactions"
+              element={(
+                <ProtectedRoute>
+                  <Transaction />
                 </ProtectedRoute>
               )}
             />

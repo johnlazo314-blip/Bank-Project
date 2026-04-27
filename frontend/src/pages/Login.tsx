@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import axios, { AxiosError } from 'axios';
 import { useAuthContext } from '@asgardeo/auth-react';
 import { isAuthenticated } from '../auth';
+import './Login.css';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
@@ -59,8 +60,8 @@ const Login = () => {
           throw lastError ?? new Error('Unable to authenticate with Asgardeo tokens');
         }
 
-        // Reload page to update header and all components with fresh auth state
-        window.location.href = '/accounts';
+        // Redirect to home page after successful login
+        window.location.href = '/';
       } catch (err) {
         const axiosErr = err as AxiosError<{ message: string }>;
         setError(axiosErr.response?.data?.message ?? 'Failed to complete sign-in');
@@ -87,16 +88,17 @@ const Login = () => {
   };
 
   return (
-    <div className="accounts-page">
-      <h1>Login</h1>
-      <p>Sign in with Asgardeo to access your accounts.</p>
-      <div className="account-form" style={{ maxWidth: 520 }}>
-        <button type="button" onClick={handleLogin} disabled={loading}>
-          {loading ? 'Redirecting...' : 'Login with Asgardeo'}
-        </button>
+    <div className="login-page">
+      <div className="login-container">
+        <h1>Login</h1>
+        <p>Sign in with Asgardeo to access your accounts.</p>
+        <div className="login-form">
+          <button type="button" className="login-button" onClick={handleLogin} disabled={loading}>
+            {loading ? 'Redirecting...' : 'Login with Asgardeo'}
+          </button>
+        </div>
+        {error && <p className="login-error">{error}</p>}
       </div>
-
-      {error && <p className="error-message">{error}</p>}
     </div>
   );
 };

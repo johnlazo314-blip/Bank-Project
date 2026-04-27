@@ -44,6 +44,28 @@
   color: #004C97; /* Primary Blue */
 }
 
+.nav-list button {
+  background: linear-gradient(135deg, #004C97 0%, #0066cc 100%);
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  font-size: 0.95rem;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(0, 76, 151, 0.2);
+}
+
+.nav-list button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 76, 151, 0.3);
+}
+
+.nav-list button:active {
+  transform: translateY(0);
+}
+
 .logo a:hover {
   color: white;
 }

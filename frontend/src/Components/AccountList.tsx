@@ -53,6 +53,7 @@ const AccountList = () => {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [editingAccountId, setEditingAccountId] = useState<number | null>(null);
+  const [pendingDeleteAccountId, setPendingDeleteAccountId] = useState<number | null>(null);
   const [formData, setFormData] = useState<AccountFormData>(initialFormData);
   const currentRole = getCurrentUserRole();
   const isAdmin = currentRole === 'admin';
@@ -158,22 +159,40 @@ const AccountList = () => {
   };
 
   const handleDelete = async (id: number) => {
-    if (!window.confirm('Are you sure you want to delete this account?')) return;
+    setPendingDeleteAccountId(id);
+  };
+
+  const cancelDelete = () => {
+    setPendingDeleteAccountId(null);
+  };
+
+  const confirmDelete = async () => {
+    if (pendingDeleteAccountId === null) {
+      return;
+    }
+
     try {
       setError(null);
-      await axios.delete(`${API_BASE_URL}/${id}`, { headers: getAuthHeaders() });
+      await axios.delete(`${API_BASE_URL}/${pendingDeleteAccountId}`, { headers: getAuthHeaders() });
       await fetchAccounts();
-      if (editingAccountId === id) resetForm();
+      if (editingAccountId === pendingDeleteAccountId) resetForm();
     } catch (err) {
       const axiosErr = err as AxiosError<{ message: string }>;
       const serverMsg = axiosErr.response?.data?.message;
       setError(serverMsg ?? 'Failed to delete account');
       console.error(err);
+    } finally {
+      setPendingDeleteAccountId(null);
     }
   };
 
   const formatBalance = (balance: number) =>
     new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(balance);
+
+  const getAccountOwnerName = (userId: number) => {
+    const owner = users.find(user => user.UserID === userId);
+    return owner ? `${owner.FirstName} ${owner.LastName}` : `User #${userId}`;
+  };
 
   if (loading) return <p>Loading accounts...</p>;
 
@@ -241,7 +260,7 @@ const AccountList = () => {
                 {account.AccountType.charAt(0).toUpperCase() + account.AccountType.slice(1)}
               </strong>
               <span className="account-balance">{formatBalance(account.Balance)}</span>
-              <small>User ID: {account.UserID} &nbsp;·&nbsp; Account #{account.AccountID}</small>
+              <small>{isAdmin ? `${getAccountOwnerName(account.UserID)} · Account #${account.AccountID}` : `User ID: ${account.UserID} · Account #${account.AccountID}`}</small>
             </div>
             <div className="account-actions">
               <button onClick={() => handleEdit(account)}>Edit</button>
@@ -252,6 +271,33 @@ const AccountList = () => {
       </ul>
 
       {accounts.length === 0 && <p className="no-accounts">No accounts found.</p>}
+
+      {pendingDeleteAccountId !== null && (
+        <div className="delete-modal-backdrop" role="presentation" onClick={cancelDelete}>
+          <div
+            className="delete-modal"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="delete-account-title"
+            aria-describedby="delete-account-message"
+            onClick={event => event.stopPropagation()}
+          >
+            <h3 id="delete-account-title">Delete account?</h3>
+            <p id="delete-account-message">
+              Warning: deleting this account will permanently delete all transaction history associated with it and
+              any related transfer records. This cannot be recovered. Would you like to proceed?
+            </p>
+            <div className="delete-modal-actions">
+              <button type="button" className="delete-modal-cancel" onClick={cancelDelete}>
+                No
+              </button>
+              <button type="button" className="delete-modal-confirm" onClick={confirmDelete}>
+                Yes, delete
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

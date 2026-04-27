@@ -1,6 +1,21 @@
+import { useNavigate } from 'react-router-dom';
+import { isAuthenticated, getCurrentUserRole } from '../auth';
 import './Home.css';
 
 const Home = () => {
+  const navigate = useNavigate();
+  const loggedIn = isAuthenticated();
+  const role = getCurrentUserRole();
+  const isAdmin = role === 'admin';
+
+  const handleCardClick = (path: string) => {
+    if (!loggedIn) {
+      navigate('/login');
+    } else {
+      navigate(path);
+    }
+  };
+
   return (
     <div className="home-container">
       <section className="hero-section">
@@ -11,18 +26,32 @@ const Home = () => {
       </section>
 
       <section className="features-section">
-        <div className="feature-card">
-          <h2>Manage Users</h2>
-          <p>Easily add, edit, and manage user accounts.</p>
-        </div>
-        <div className="feature-card">
+        <button
+          type="button"
+          className="feature-card feature-card-button"
+          onClick={() => handleCardClick('/accounts')}
+        >
           <h2>View Accounts</h2>
           <p>Check account balances and details in real-time.</p>
-        </div>
-        <div className="feature-card">
+        </button>
+        <button
+          type="button"
+          className="feature-card feature-card-button"
+          onClick={() => handleCardClick('/transactions')}
+        >
           <h2>Track Transactions</h2>
           <p>Keep an eye on all incoming and outgoing transactions.</p>
-        </div>
+        </button>
+        {isAdmin && (
+          <button
+            type="button"
+            className="feature-card feature-card-button"
+            onClick={() => handleCardClick('/users')}
+          >
+            <h2>Manage Users</h2>
+            <p>Easily add, edit, and manage user accounts.</p>
+          </button>
+        )}
       </section>
     </div>
   );

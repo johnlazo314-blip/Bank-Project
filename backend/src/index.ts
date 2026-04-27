@@ -4,8 +4,11 @@ import dotenv from 'dotenv';
 import { connectDb } from './db';
 import userRoutes from './routes/users';
 import accountRoutes from './routes/accounts';
+import transactionRoutes from './routes/transactions';
 import './models/User';
 import './models/Account';
+import './models/Transaction';
+import './models/Transfer';
 
 dotenv.config();
 
@@ -19,6 +22,7 @@ app.use(express.json());
 // Routes
 app.use('/api/users', userRoutes);
 app.use('/api/accounts', accountRoutes);
+app.use('/api/transactions', transactionRoutes);
 
 app.get('/', (req: Request, res: Response) => {
   res.send('Bank API is running!');
