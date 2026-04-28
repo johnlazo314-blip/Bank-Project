@@ -11,6 +11,19 @@ NorthBank is a banking portal for viewing accounts, managing users, and making t
 - The Transactions page lets users deposit, withdraw, and transfer money.
 - The User Management page is available only to admin users and is used to create, edit, and delete users and accounts.
 - Authentication is handled through Asgardeo, and the backend matches the logged-in Asgardeo identity to the corresponding database user.
+- The AI Chatbot integration provides intelligent customer support, helping users with account inquiries, transaction assistance, and common banking questions.
+
+## AI Chatbot Integration
+
+The application includes an integrated AI chatbot that leverages machine learning to provide intelligent customer support. The chatbot helps users with:
+
+- Account and balance inquiries
+- Transaction history and details
+- Deposit, withdrawal, and transfer assistance
+- General banking questions and guidance
+- Account management support
+
+The chatbot is context-aware and can access user account information to provide personalized responses. It learns from user interactions to improve response quality over time.
 
 ## Adding A New User
 
